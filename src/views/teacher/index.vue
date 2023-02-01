@@ -43,7 +43,7 @@
       <el-table-column prop="contact" label="联系电话"> </el-table-column>
       <el-table-column prop="person" label="管理的人员">
         <template slot-scope="{row}">
-          <span v-for="item in row.person" :key="item.id">{{item.name}}</span>
+          <span v-for="item in row.person" :key="item.id">{{item.name}};</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="100">
@@ -65,7 +65,7 @@
     </el-pagination>
 
     <el-dialog
-      title="新增"
+      title="操作"
       :visible.sync="dialogFormVisible"
       :close-on-click-modal="false"
     >
@@ -190,14 +190,14 @@ export default {
           });
         });
     },
-    //邮件发送
+    //、
     sendMailAndSms() {
       this.$refs.form.validate((valid) => {
         if (valid) {
-          let obj = JSON.parse(JSON.stringify(this.form));
+          let obj = JSON.parse(JSON.stringify({...this.form, person:JSON.stringify(this.form.person)}));
           if (this.id) {
             updateConservator(obj).then((res) => {
-              this.$message.success("添加成功");
+              this.$message.success("修改成功");
               this.dialogFormVisible = false;
               this.getQueryByPage();
               if (res.code === 200) {

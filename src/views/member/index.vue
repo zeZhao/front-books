@@ -84,7 +84,11 @@
       <el-table-column prop="contact" label="联系电话"> </el-table-column>
       <el-table-column prop="birth" label="出生日期"> </el-table-column>
       <el-table-column prop="admission" label="入会日期"> </el-table-column>
-      <el-table-column prop="record" label="借书记录"> </el-table-column>
+      <el-table-column prop="record" label="借书记录">
+        <template slot-scope="{row}">
+          <span v-for="item in row.record" :key="item.id">{{item.name}};</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="owning" label="所属管理员">
         <template slot-scope="{ row }">
           <span>{{ getConservatorName(row.owning) }}</span>
@@ -112,7 +116,7 @@
     </el-pagination>
 
     <el-dialog
-      title="新增"
+      title="操作"
       :visible.sync="dialogFormVisible"
       :close-on-click-modal="false"
     >
@@ -398,6 +402,9 @@ export default {
     getQueryByPage() {
       memberList(this.searchForm).then((res) => {
         this.tableData = res.members.list;
+        this.tableData.forEach(item=>{
+          item.record = JSON.parse(item.record)
+        })
         this.total = res.members.total;
       });
     },
