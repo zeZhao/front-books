@@ -43,7 +43,7 @@
       <el-table-column prop="contact" label="联系电话"> </el-table-column>
       <el-table-column prop="person" label="管理的人员">
         <template slot-scope="{row}">
-          <span v-for="item in row.person" :key="item.id">{{item.name}};</span>
+          <span v-for="item in row.person" :key="item.id">{{item.name}}；</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="100">
@@ -241,11 +241,9 @@ export default {
         this.tableData = res.ConserList.list;
         this.tableData.forEach(item=>{
           item.person = JSON.parse(item.person)
+          console.log(item.person)
         })
-        console.log(this.tableData,'=======')
         this.total = res.ConserList.total;
-        if (res.code === 200) {
-        }
       });
     },
     onSubmit() {

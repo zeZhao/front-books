@@ -86,7 +86,7 @@
       <el-table-column prop="admission" label="入会日期"> </el-table-column>
       <el-table-column prop="record" label="借书记录">
         <template slot-scope="{row}">
-          <span v-for="item in row.record" :key="item.id">{{item.name}};</span>
+          <span v-for="item in row.recordList" :key="item.id">{{item.name}}；</span>
         </template>
       </el-table-column>
       <el-table-column prop="owning" label="所属管理员">
@@ -403,8 +403,17 @@ export default {
       memberList(this.searchForm).then((res) => {
         this.tableData = res.members.list;
         this.tableData.forEach(item=>{
-          item.record = JSON.parse(item.record)
+          item.recordList = item.recordList.map(el=>{
+            return JSON.parse(el)
+            // item.bookList.push(el)
+            // console.log(el,'---------el')
+          })
+          
         })
+        console.log(this.tableData,'-----')
+        // this.tableData.forEach(item=>{
+        //   item.person = JSON.parse(item.person)
+        // })
         this.total = res.members.total;
       });
     },
