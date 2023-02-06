@@ -78,7 +78,7 @@
       <el-table-column prop="age" label="年龄"> </el-table-column>
       <el-table-column prop="head" label="头像">
         <template slot-scope="{ row }">
-          <el-image :src="row.head"></el-image>
+          <el-image :src="row.head" style="width:100px;height:100px"></el-image>
         </template>
       </el-table-column>
       <el-table-column prop="contact" label="联系电话"> </el-table-column>
