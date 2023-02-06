@@ -50,7 +50,7 @@
       <el-table-column prop="name" label="名称"> </el-table-column>
       <el-table-column prop="cover" label="图书封面">
         <template slot-scope="{row}">
-          <el-image :src="row.cover"></el-image>
+          <el-image :src="row.cover" style="width:100px;height:100px"></el-image>
         </template>
       </el-table-column>
       <el-table-column prop="time" label="日期"> </el-table-column>
@@ -58,7 +58,7 @@
       </el-table-column>
       <el-table-column prop="qr" label="图书二维码">
         <template slot-scope="{row}">
-          <el-image :src="row.qr"></el-image>
+          <el-image :src="row.qr" :preview-src-list="[row.qr]"></el-image>
         </template>
       </el-table-column>
       <el-table-column label="操作">
@@ -68,7 +68,7 @@
           <el-button
             size="small"
             type="text"
-            @click="qrcode(row)"
+            @click="newQrcode(row)"
             v-if="!row.qr"
             >点击生成二维码</el-button
           >
@@ -248,8 +248,12 @@ export default {
           let obj = JSON.parse(JSON.stringify(this.form));
           if (this.id) {
             update({ ...obj, id: this.id }).then((res) => {
-              this.getQueryByPage();
-              this.dialogFormVisible = false;
+              update({ ...obj,qr:'' }).then(res=>{
+                this.getQueryByPage();
+                this.dialogFormVisible = false;
+              })
+              // this.getQueryByPage();
+              
             });
           } else {
             insertBoot({ ...obj }).then((res) => {
@@ -280,12 +284,16 @@ export default {
       }
       return new File([u8arr], fileName, { type });
     },
-    qrcode(data) {
+    newQrcode(data) {
       this.$refs.qrcode.innerHTML = ""; // 清空之前生成的二维码内容
       let qrcode = new QRCode("qrcode", {
         width: 100, // 设置宽度，单位像素
         height: 100, // 设置高度，单位像素
+        colorDark: "#000000", // 二维码颜色
+        colorLight: "#ffffff", // 背景颜色
+        correctLevel: QRCode.CorrectLevel.H, // 校正水准
         text: JSON.stringify(data), // 设置二维码内容或跳转地址(完整链接)
+        correctLevel : 0
       });
       // this.isQrcode = false;
       setTimeout(() => {

@@ -362,6 +362,9 @@ export default {
       this.$refs.form.validate((valid) => {
         if (valid) {
           let obj = JSON.parse(JSON.stringify(this.form));
+          if(obj.recordList.length > 0){
+            obj.recordList = obj.recordList.map(item => JSON.stringify(item))
+          }
           if (this.id) {
             updateMember({
               ...obj,
