@@ -2,39 +2,38 @@ import request from '@/utils/http'
 
 export function queryByPage(data) {
   return request({
-    url: '/bootList',
-    method: 'post',
+    url: '/boot/list',
+    method: 'get',
     data
   })
 }
-//xinzeng
+//新增
 export function insertBoot(data) {
   return request({
-    url: '/insertBoot',
+    url: '/boot',
     method: 'post',
     data
   })
 }
-//xinzeng
+//修改
 export function update(data) {
   return request({
-    url: '/update',
-    method: 'post',
+    url: '/boot',
+    method: 'put',
     data
   })
 }
-//xinzeng
+//删除
 export function deteleBoot(data) {
   return request({
-    url: '/deleteBoot',
-    method: 'post',
-    data
+    url: `/boot/${data}`,
+    method: 'delete',
   })
 }
-//xinzeng
-export function upload(data) {
+//上传
+export function commonUpload(data) {
   return request({
-    url: '/upload',
+    url: '/common/upload',
     method: 'post',
     data,
     

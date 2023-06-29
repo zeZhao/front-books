@@ -76,6 +76,7 @@
     >
       <el-table-column prop="name" label="会员名称"> </el-table-column>
       <el-table-column prop="age" label="年龄"> </el-table-column>
+      <el-table-column prop="gender" label="性别"> </el-table-column>
       <el-table-column prop="head" label="头像">
         <template slot-scope="{ row }">
           <el-image :src="row.head" style="width:100px;height:100px"></el-image>
@@ -108,7 +109,7 @@
       background
       layout="total, sizes, prev, pager, next"
       :total="total"
-      :current-page.sync="searchForm.pageNumber"
+      :current-page.sync="searchForm.pageNum"
       :page-size="searchForm.pageSize"
       @size-change="sizeChange"
       @current-change="currentChange"
@@ -214,10 +215,10 @@
 
 <script>
 import {
-  memberList,
-  insertMember,
-  updateMember,
-  deleteMember,
+  queryByPage,
+  append,
+  update,
+  remove,
 } from "@/api/member";
 import { setStorage, getStorage } from "@/utils/auth";
 import { ConservatorList } from "@/api/person";
@@ -232,7 +233,7 @@ export default {
         owning: "",
         clbum: "",
         kindergarten: "",
-        pageNumber: 1,
+        pageNum: 1,
         pageSize: 10,
       },
       //表格数据
@@ -252,25 +253,14 @@ export default {
         kindergarten: "",
         clbum: "",
       },
-      // validator
-      rules: {
-        recipient: [
-          {
-            required: true,
-            type: "email",
-            message: "请输正确的邮箱格式",
-            trigger: "blur",
-          },
-        ],
-      },
       multipleSelection: [],
       dialogImageUrl: "",
       dialogVisible: false,
-      action: process.env.VUE_APP_BASE_API + "/upload",
+      action: process.env.VUE_APP_BASE_API + "/common/upload",
       textImage: [],
       attachment: [],
       headers: {
-        token: getStorage("token"),
+        Authorization: getStorage("token"),
       },
       conservatorList: [],
       cover: [],
@@ -294,7 +284,7 @@ export default {
       return str;
     },
     getConservator() {
-      ConservatorList({ pageNumber: 1, pageSize: 999 }).then((res) => {
+      ConservatorList({ pageNum: 1, pageSize: 999 }).then((res) => {
         this.conservatorList = res.ConserList.list;
       });
     },
@@ -306,7 +296,7 @@ export default {
       return arr.includes(file.type);
     },
     handleSuccess(res) {
-      this.form.head = res.file;
+      this.form.head = res.url;
       // if (res.code === 200) {
       //   this.form.head = res.file
       //   // this.textImage.push(res.data);
@@ -336,7 +326,7 @@ export default {
         type: "warning",
       })
         .then(() => {
-          deleteMember({ id: row.id }).then((res) => {
+          remove(row.id).then((res) => {
             this.$message({
               type: "success",
               message: "删除成功!",
@@ -362,11 +352,11 @@ export default {
       this.$refs.form.validate((valid) => {
         if (valid) {
           let obj = JSON.parse(JSON.stringify(this.form));
-          if(obj.recordList.length > 0){
-            obj.recordList = obj.recordList.map(item => JSON.stringify(item))
-          }
+          // if(obj.recordList.length > 0){
+          //   obj.recordList = obj.recordList.map(item => JSON.stringify(item))
+          // }
           if (this.id) {
-            updateMember({
+            update({
               ...obj,
               id: this.id,
               em_did: this.row.owning,
@@ -376,7 +366,7 @@ export default {
               this.getQueryByPage();
             });
           } else {
-            insertMember(obj).then((res) => {
+            append(obj).then((res) => {
               this.$message.success("添加成功");
               this.dialogFormVisible = false;
               this.getQueryByPage();
@@ -387,7 +377,12 @@ export default {
     },
     send() {
       for (let key in this.form) {
-        this.form[key] = "";
+		  if(key === 'record'){
+			  this.form[key] = [];
+		  }else{
+			  this.form[key] = "";
+		  }
+        
       }
       this.id = "";
       this.cover = [];
@@ -395,29 +390,29 @@ export default {
     },
     sizeChange(val) {
       this.searchForm.pageSize = val;
-      this.searchForm.pageNumber = 1;
+      this.searchForm.pageNum = 1;
       this.getQueryByPage();
     },
     currentChange(val) {
-      this.searchForm.pageNumber = val;
+      this.searchForm.pageNum = val;
       this.getQueryByPage();
     },
     getQueryByPage() {
-      memberList(this.searchForm).then((res) => {
-        this.tableData = res.members.list;
-        this.tableData.forEach(item=>{
-          item.recordList = item.recordList.map(el=>{
-            return JSON.parse(el)
-            // item.bookList.push(el)
-            // console.log(el,'---------el')
-          })
+      queryByPage(this.searchForm).then((res) => {
+        this.tableData = res.data.records;
+        // this.tableData.forEach(item=>{
+        //   item.recordList = item.recordList.map(el=>{
+        //     return JSON.parse(el)
+        //     // item.bookList.push(el)
+        //     // console.log(el,'---------el')
+        //   })
           
-        })
+        // })
         console.log(this.tableData,'-----')
         // this.tableData.forEach(item=>{
         //   item.person = JSON.parse(item.person)
         // })
-        this.total = res.members.total;
+        this.total = res.data.total;
       });
     },
     onSubmit() {

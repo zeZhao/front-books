@@ -1,11 +1,7 @@
 import request from '@/utils/http'
 
 export function login(data) {
-  return request({
-    url: '/login',
-    method: 'post',
-    data
-  })
+	return request("/sys/login","post",data)
 }
 export function logout() {
   return request({

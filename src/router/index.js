@@ -30,14 +30,7 @@ export const constantRoutes = [
           title: '书籍管理',
         }
       },
-      // {
-      //   path: '/bookDistribution',
-      //   name: 'bookDistribution',
-      //   component: () => import(/* webpackChunkName: "about" */ '../views/bookDistribution/index.vue'),
-      //   meta: {
-      //     title: '图书分布'
-      //   }
-      // },
+      
       {
         path: '/teacher',
         name: 'teacher',
@@ -54,6 +47,14 @@ export const constantRoutes = [
           title: '会员管理'
         }
       },
+	  {
+	    path: '/kindergarten',
+	    name: 'kindergarten',
+	    component: () => import(/* webpackChunkName: "about" */ '../views/kindergarten/index.vue'),
+	    meta: {
+	      title: '幼儿园管理'
+	    }
+	  },
     ]
   },
   

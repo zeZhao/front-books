@@ -2,28 +2,12 @@
   <div class="downloadCenter">
     <div class="search">
       <el-form :model="searchForm" :inline="true">
-        <el-form-item label="教师姓名：">
+        <el-form-item label="幼儿园名称：">
           <el-input
             v-model="searchForm.name"
-            placeholder="请输入教师姓名"
+            placeholder="请输入幼儿园名称"
           ></el-input>
         </el-form-item>
-        <el-form-item label="联系电话：">
-          <el-input
-            v-model="searchForm.contact"
-            placeholder="请输入联系电话："
-          ></el-input>
-        </el-form-item>
-        <!-- <el-form-item label="管理下的人员：">
-          <el-select v-model="searchForm.person" filterable>
-            <el-option
-              v-for="(item, index) in personList"
-              :key="index"
-              :value="item.value"
-              :label="item.label"
-            ></el-option>
-          </el-select>
-        </el-form-item> -->
         <el-form-item>
           <el-button type="primary" @click="onSubmit">查询</el-button>
           <el-button type="primary" @click="send">新增</el-button>
@@ -39,13 +23,15 @@
       }"
       highlight-current-row
     >
-      <el-table-column prop="name" label="教师姓名"> </el-table-column>
-      <el-table-column prop="contact" label="联系电话"> </el-table-column>
-      <el-table-column prop="person" label="管理的人员">
+      <el-table-column prop="name" label="幼儿园名称"> </el-table-column>
+      <el-table-column prop="password" label="入园密码"> </el-table-column>
+      <el-table-column prop="classGrade" label="班级"> </el-table-column>
+      <el-table-column prop="createTime" label="创建时间"> </el-table-column>
+      <!-- <el-table-column prop="person" label="管理的人员">
         <template slot-scope="{row}">
           <span v-for="item in row.person" :key="item.id">{{item.name}}；</span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="操作" width="100">
         <template slot-scope="{ row }">
           <span class="handle" @click="update(row)">修改</span>
@@ -70,13 +56,19 @@
       :close-on-click-modal="false"
     >
       <el-form :model="form" label-width="100px" ref="form">
-        <el-form-item label="教师姓名：" prop="name">
-          <el-input v-model="form.name" placeholder="请输入教师姓名"></el-input>
+        <el-form-item label="幼儿园名称：" prop="name">
+          <el-input v-model="form.name" placeholder="请输入幼儿园名称"></el-input>
         </el-form-item>
-        <el-form-item label="联系电话：" prop="contact">
+        <el-form-item label="入园密码：" prop="password">
           <el-input
-            v-model="form.contact"
-            placeholder="请输入联系电话"
+            v-model="form.password"
+            placeholder="请输入入园密码"
+          ></el-input>
+        </el-form-item>
+		<el-form-item label="班级：" prop="classGrade">
+          <el-input
+            v-model="form.classGrade"
+            placeholder="请输入班级"
           ></el-input>
         </el-form-item>
         <!-- <el-form-item label="管理下的人员：">
@@ -122,7 +114,7 @@ import {
   append,
   update,
   remove,
-} from "@/api/conservator";
+} from "@/api/kindergarten";
 
 export default {
   components: {},
@@ -130,8 +122,6 @@ export default {
     return {
       searchForm: {
         name: "",
-        contact: "",
-        person: "",
         pageNum: 1,
         pageSize: 10,
       },
@@ -141,8 +131,8 @@ export default {
       dialogFormVisible: false,
       form: {
         name: "",
-        contact: "",
-        person: [],
+        password: "",
+        classGrade: [],
       },
       personList: [],
       id: "",

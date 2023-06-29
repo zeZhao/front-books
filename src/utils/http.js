@@ -11,7 +11,7 @@ const service = axios.create({
 
 service.interceptors.request.use(
   config => {
-    config.headers['token'] = getStorage('token')
+    config.headers['Authorization'] = getStorage('token')
     return config
   },
   error => {
@@ -27,12 +27,12 @@ service.interceptors.response.use(
         type: 'error',
       })
     } else if (res.code === 401) {
-      setStorage("token")
+      // setStorage("token")
       Message({
         message: '登录过期，请重新登录！',
         type: 'error',
       })
-      setTimeout(() => window.location.reload(), 2000);
+      // setTimeout(() => window.location.reload(), 2000);
     }
     return res
   },
@@ -45,4 +45,30 @@ service.interceptors.response.use(
   }
 )
 
-export default service
+function request(url, method, data, isBlod = false) {
+  let obj = {
+    url,
+    method,
+    params: data,
+    data,
+  }
+  if (method === 'get' || method === 'delete') {
+    delete obj.data
+    if (isBlod) {
+      obj.responseType = 'blob'
+    }
+    return service(obj)
+  }
+  if (method === 'post' || method === 'put') {
+    delete obj.params
+    if (isBlod) {
+      obj.responseType = 'blob'
+    }
+    return service(obj)
+  }
+
+}
+
+export default request
+
+// export default service

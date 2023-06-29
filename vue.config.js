@@ -20,7 +20,7 @@ module.exports = {
             errors: true
         },
         proxy: {
-            '/api': {
+            '/stage-api': {
                 // target: 'http://10.10.0.4:8601',
                 target: process.env.VUE_APP_HOST_URL,
                 // target: 'http://192.168.12.144:18246',

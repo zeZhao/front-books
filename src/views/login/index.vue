@@ -128,73 +128,28 @@ export default {
     };
   },
   created() {
-    // window.addEventListener('storage', this.afterQRScan)
   },
   mounted() {
-    this.getCaptcha();
-    localStorage.uuid = randomNum();
-    localStorage.time = getTime();
-    // window.localStorage.getItem('uuid')
   },
   methods: {
-    getCaptcha() {
-      console.log(process.env.VUE_APP_BASE_API);
-      const num = Math.ceil(Math.random() * 10); //生成一个随机数（防止缓存）
-      this.captcha =
-        process.env.VUE_APP_BASE_API +
-        "/user/captcha?uuId=" +
-        this.loginForm.uuid +
-        "&num=" +
-        num;
-    },
     handleLogin() {
-      if (this.loginForm.username.length === 0) {
-        this.$message.error("请输入账号");
-        return;
-      }
-      if (this.loginForm.password.length === 0) {
-        this.$message.error("请输入密码");
-        return;
-      }
-      // if (this.loginForm.verifyCode.length === 0) {
-      //   this.$message.error("请输入口令");
-      //   return;
-      // }
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
-          // this.loading = true;
-          // const smsToken = "token" + randomNum();
-          //       setStorage("token", smsToken);
-          //       // setStorage("info", data.data);
-          //       this.$router.push("./aloneExport");
-          //       this.$message.success("登录成功");
           login({
             username: this.loginForm.username,
             password: this.loginForm.password,
             // verifyCode: this.loginForm.verifyCode,
-            // uuId: this.loginForm.uuid
-          })
-            .then((data) => {
-              if(data.data.token){
-                // const smsToken = "token" + randomNum();
-                const smsToken = data.data.token;
+			code:this.loginForm.uuid,
+            uuid: this.loginForm.uuid
+          }).then((res) => {
+              if(res.code === 200){
+                const smsToken = res.token;
                 setStorage("token", smsToken);
-                setStorage("info", data.data.user);
                 this.$router.push("/book");
                 this.$message.success("登录成功");    
               }else{
                 this.$message.error('请检查重新您的账号密码')
               }
-              
-              // if (data.code === 200) {
-              //   const smsToken = "token" + randomNum();
-              //   setStorage("token", smsToken);
-              //   setStorage("info", data.data);
-              //   this.$router.push("./aloneExport");
-              //   this.$message.success("登录成功");
-              // } else {
-              //   this.getCaptcha();
-              // }
               this.loading = false;
             })
             .catch((error) => {
