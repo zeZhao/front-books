@@ -2,10 +2,10 @@
   <div class="downloadCenter">
     <div class="search">
       <el-form :model="searchForm" :inline="true">
-        <el-form-item label="幼儿园名称：">
+        <el-form-item label="类别名称：">
           <el-input
             v-model="searchForm.name"
-            placeholder="请输入幼儿园名称"
+            placeholder="请输入类别名称"
           ></el-input>
         </el-form-item>
         <el-form-item>
@@ -23,19 +23,8 @@
       }"
       highlight-current-row
     >
-      <el-table-column prop="name" label="幼儿园名称"> </el-table-column>
-      <el-table-column prop="password" label="入园密码"> </el-table-column>
-      <el-table-column prop="memberPrice" label="会员价格"> </el-table-column>
-      <el-table-column prop="classGrade" label="班级"> </el-table-column>
-	  <el-table-column prop="memberNum" label="会员"> </el-table-column>
-	  <el-table-column prop="studentNum" label="学生"> </el-table-column>
-	  <el-table-column prop="borrowNum" label="借阅"> </el-table-column>
-      <el-table-column prop="createTime" label="创建时间"> </el-table-column>
-      <!-- <el-table-column prop="person" label="管理的人员">
-        <template slot-scope="{row}">
-          <span v-for="item in row.person" :key="item.id">{{item.name}}；</span>
-        </template>
-      </el-table-column> -->
+      <el-table-column prop="id" label="ID"> </el-table-column>
+      <el-table-column prop="name" label="类别名称"> </el-table-column>
       <el-table-column label="操作" width="100">
         <template slot-scope="{ row }">
           <span class="handle" @click="update(row)">修改</span>
@@ -60,19 +49,9 @@
       :close-on-click-modal="false"
     >
       <el-form :model="form" label-width="100px" ref="form">
-        <el-form-item label="幼儿园名称：" prop="name">
-          <el-input v-model="form.name" placeholder="请输入幼儿园名称"></el-input>
-        </el-form-item> 
-		
-        <el-form-item label="入园密码：" prop="password">
-          <el-input
-            v-model="form.password"
-            placeholder="请输入入园密码"
-          ></el-input>
+        <el-form-item label="类别名称：" prop="name">
+          <el-input v-model="form.name" placeholder="请输入类别"></el-input>
         </el-form-item>
-		<el-form-item label="会员价格：" prop="name">
-		  <el-input v-model="form.memberPrice" placeholder="请输入会员价格"></el-input>
-		</el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -89,7 +68,7 @@ import {
   append,
   update,
   remove,
-} from "@/api/kindergarten";
+} from "@/api/category";
 
 export default {
   components: {},
@@ -106,8 +85,6 @@ export default {
       dialogFormVisible: false,
       form: {
         name: "",
-        password: "",
-        memberPrice: "",
       },
       personList: [],
       id: "",

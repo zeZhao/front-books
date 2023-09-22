@@ -2,11 +2,13 @@
   <div class="downloadCenter">
     <div class="search">
       <el-form :model="searchForm" :inline="true">
-        <el-form-item label="幼儿园名称：">
-          <el-input
-            v-model="searchForm.name"
-            placeholder="请输入幼儿园名称"
-          ></el-input>
+		  <el-form-item label="班级名称：">
+		  	<el-input v-model="searchForm.name" placeholder="请输入班级名称"></el-input>
+		  </el-form-item>
+        <el-form-item label="所属幼儿园：">
+        	<el-select v-model="searchForm.kindergartenId" placeholder="请选择所属幼儿园" clearable>
+        		<el-option v-for="item in kindergartenList" :value="item.id" :label="item.name"></el-option>
+        	</el-select>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSubmit">查询</el-button>
@@ -23,14 +25,14 @@
       }"
       highlight-current-row
     >
-      <el-table-column prop="name" label="幼儿园名称"> </el-table-column>
-      <el-table-column prop="password" label="入园密码"> </el-table-column>
-      <el-table-column prop="memberPrice" label="会员价格"> </el-table-column>
-      <el-table-column prop="classGrade" label="班级"> </el-table-column>
-	  <el-table-column prop="memberNum" label="会员"> </el-table-column>
-	  <el-table-column prop="studentNum" label="学生"> </el-table-column>
-	  <el-table-column prop="borrowNum" label="借阅"> </el-table-column>
-      <el-table-column prop="createTime" label="创建时间"> </el-table-column>
+      <el-table-column prop="name" label="年级名"> </el-table-column>
+      <el-table-column prop="kindergartenName" label="归属幼儿园"> </el-table-column>
+      <el-table-column prop="memberNum" label="会员"> </el-table-column>
+      <el-table-column prop="studentNum" label="学生"> </el-table-column>
+      <el-table-column prop="borrowNum" label="借阅"> </el-table-column>
+      <el-table-column prop="creatTime" label="创建时间"> </el-table-column>
+<!--      <el-table-column prop="classGrade" label="班级"> </el-table-column>
+      <el-table-column prop="createTime" label="创建时间"> </el-table-column> -->
       <!-- <el-table-column prop="person" label="管理的人员">
         <template slot-scope="{row}">
           <span v-for="item in row.person" :key="item.id">{{item.name}}；</span>
@@ -60,18 +62,13 @@
       :close-on-click-modal="false"
     >
       <el-form :model="form" label-width="100px" ref="form">
-        <el-form-item label="幼儿园名称：" prop="name">
-          <el-input v-model="form.name" placeholder="请输入幼儿园名称"></el-input>
-        </el-form-item> 
-		
-        <el-form-item label="入园密码：" prop="password">
-          <el-input
-            v-model="form.password"
-            placeholder="请输入入园密码"
-          ></el-input>
+        <el-form-item label="班级名称：" prop="name">
+          <el-input v-model="form.name" placeholder="请输入班级名称"></el-input>
         </el-form-item>
-		<el-form-item label="会员价格：" prop="name">
-		  <el-input v-model="form.memberPrice" placeholder="请输入会员价格"></el-input>
+		<el-form-item label="所属幼儿园：">
+			<el-select v-model="form.kindergartenId" placeholder="请选择所属幼儿园" clearable>
+				<el-option v-for="item in kindergartenList" :value="item.id" :label="item.name"></el-option>
+			</el-select>
 		</el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -89,7 +86,8 @@ import {
   append,
   update,
   remove,
-} from "@/api/kindergarten";
+} from "@/api/class";
+import {kindergartenList} from "@/api/select"
 
 export default {
   components: {},
@@ -97,6 +95,7 @@ export default {
     return {
       searchForm: {
         name: "",
+        kindergartenId: "",
         pageNum: 1,
         pageSize: 10,
       },
@@ -106,19 +105,27 @@ export default {
       dialogFormVisible: false,
       form: {
         name: "",
-        password: "",
-        memberPrice: "",
+        kindergartenId: "",
       },
-      personList: [],
       id: "",
+	  kindergartenList:[],
     };
   },
-  created() {},
+  created() {
+	  this.getKindergartenList()
+  },
   mounted() {
     this.getQueryByPage();
   },
   computed: {},
   methods: {
+	  //查询幼儿园
+	  getKindergartenList(){
+	  	kindergartenList().then(res=>{
+	  		this.kindergartenList = res.data
+	  		console.log(res,'======')
+	  	})
+	  },
     //删除
     deleteDownload(row) {
       this.$confirm("删除后将不可找回，请谨慎操作", "确认删除", {
@@ -142,7 +149,7 @@ export default {
           });
         });
     },
-    //、
+    //提交
     sendMailAndSms() {
       this.$refs.form.validate((valid) => {
         if (valid) {
@@ -198,6 +205,15 @@ export default {
     getQueryByPage() {
       queryByPage(this.searchForm).then((res) => {
         this.tableData = res.data.records;
+		this.tableData.forEach(item=>{
+			if(item.kindergartenId){
+				this.kindergartenList.forEach(el=>{
+					if(item.kindergartenId == el.id){
+						item.kindergartenName = el.name
+					}
+				})
+			}
+		})
         // this.tableData.forEach(item=>{
         //   item.person = JSON.parse(item.person)
         //   console.log(item.person)

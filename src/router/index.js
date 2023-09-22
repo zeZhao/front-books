@@ -29,8 +29,29 @@ export const constantRoutes = [
         meta: {
           title: '书籍管理',
         }
+      },{
+        path: '/category',
+        name: 'category',
+        component: () => import(/* webpackChunkName: "about" */ '../views/category/index.vue'),
+        meta: {
+          title: '类别管理',
+        }
       },
-      
+	  {
+	    path: '/kindergarten',
+	    name: 'kindergarten',
+	    component: () => import(/* webpackChunkName: "about" */ '../views/kindergarten/index.vue'),
+	    meta: {
+	      title: '幼儿园管理'
+	    }
+	  }, {
+	    path: '/class',
+	    name: 'class',
+	    component: () => import(/* webpackChunkName: "about" */ '../views/class/index.vue'),
+	    meta: {
+	      title: '班级管理'
+	    }
+	  },
       {
         path: '/teacher',
         name: 'teacher',
@@ -47,14 +68,7 @@ export const constantRoutes = [
           title: '会员管理'
         }
       },
-	  {
-	    path: '/kindergarten',
-	    name: 'kindergarten',
-	    component: () => import(/* webpackChunkName: "about" */ '../views/kindergarten/index.vue'),
-	    meta: {
-	      title: '幼儿园管理'
-	    }
-	  },
+	  
     ]
   },
   

@@ -5,8 +5,18 @@
 				<el-form-item label="书籍名称：">
 					<el-input v-model="searchForm.bootName" placeholder="请输入书籍名称"></el-input>
 				</el-form-item>
+				<el-form-item label="ISBN：">
+					<el-input v-model="searchForm.isbn" placeholder="请输入ISBN" clearable></el-input>
+				</el-form-item>
 				<el-form-item label="所属幼儿园：">
-					<el-input v-model="searchForm.kindergarten" placeholder="请输入所属幼儿园"></el-input>
+					<el-select v-model="searchForm.kindergarten" placeholder="请选择所属幼儿园" clearable>
+						<el-option v-for="item in kindergartenList" :value="item.id" :label="item.name"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="类别：">
+					<el-select v-model="searchForm.category" placeholder="请选择类别" clearable>
+						<el-option v-for="item in categoryList" :value="item.id" :label="item.name"></el-option>
+					</el-select>
 				</el-form-item>
 				<el-form-item label="日期：">
 					<el-date-picker v-model="searchForm.searchDate" type="date" placeholder="选择日期"
@@ -30,31 +40,21 @@
         background: '#FAFAFA',
         borderBottom: '1px solid #fff',
       }" highlight-current-row>
-			<!-- <el-table-column type="selection" width="55"> </el-table-column> -->
-			<el-table-column prop="author" label="图书作者"> </el-table-column>
-			<el-table-column prop="category" label="类别"> </el-table-column>
-			<!-- <el-table-column prop="cover" label="图书封面"> </el-table-column> -->
 			<el-table-column prop="id" label="编号"> </el-table-column>
 			<el-table-column prop="isbn" label="图书ISBN"> </el-table-column>
-			<el-table-column prop="kindergarten" label="所属幼儿园"> </el-table-column>
-			<el-table-column prop="name" label="图书名称"> </el-table-column>
-			<el-table-column prop="path" label="音视频存储路径"> </el-table-column>
-			<!-- <el-table-column prop="qr" label="二维码"> </el-table-column> -->
-			<el-table-column prop="time" label="日期"> </el-table-column>
-			<el-table-column prop="pages" label="页数"> </el-table-column>
+			<el-table-column prop="name" label="图书名称" width="150"> </el-table-column>
 			<el-table-column prop="cover" label="图书封面">
 				<template slot-scope="{row}">
 					<el-image :src="row.cover" style="width:100px;height:100px"></el-image>
 				</template>
 			</el-table-column>
-			<!-- <el-table-column prop="time" label="日期"> </el-table-column> -->
-			<!-- <el-table-column prop="kindergarten" label="幼儿园记录">
-      </el-table-column> -->
-			<el-table-column prop="qr" label="图书二维码">
-				<template slot-scope="{row}">
-					<el-image :src="row.qr" :preview-src-list="[row.qr]"></el-image>
-				</template>
-			</el-table-column>
+			<el-table-column prop="author" label="图书作者"> </el-table-column>
+			<el-table-column prop="categoryName" label="类别"> </el-table-column>
+			<el-table-column prop="pages" label="页数"> </el-table-column>
+			<!-- <el-table-column prop="kindergartenName" label="所属幼儿园"> </el-table-column> -->
+			<el-table-column prop="path" label="音视频存储路径"> </el-table-column>
+			<el-table-column prop="time" label="日期"> </el-table-column>
+
 			<el-table-column label="操作">
 				<template slot-scope="{ row }">
 					<span class="handle" @click="update(row)">修改</span>
@@ -74,18 +74,11 @@
 			@current-change="currentChange">
 		</el-pagination>
 
-		<el-dialog title="书籍操作" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
-			<el-form :model="form" label-width="100px" ref="form">
-				
-				<el-form-item label="书籍名称：" prop="recipient">
+		<el-dialog title="书籍操作" :visible.sync="dialogFormVisible" :close-on-click-modal="false" :show-close="false">
+			<el-form :model="form" label-width="100px" ref="form" :rules="rules">
+
+				<el-form-item label="书籍名称：" prop="name">
 					<el-input v-model="form.name" placeholder="请输入书籍名称"></el-input>
-				</el-form-item>
-				<el-form-item label="所属幼儿园：" prop="kindergarten">
-					<el-input v-model="form.kindergarten" placeholder="请输入所属幼儿园"></el-input>
-				</el-form-item>
-				<el-form-item label="日期：" prop="ccPerson">
-					<el-date-picker v-model="form.time" type="date" value-format="yyyy-MM-dd" placeholder="选择日期">
-					</el-date-picker>
 				</el-form-item>
 				<el-form-item label="图书封面：" prop="cover">
 					<el-upload ref="cover" :limit="1" :file-list="cover" :action="action" :headers="headers"
@@ -98,16 +91,40 @@
 					<el-input v-model="form.author" placeholder="请输入图书作者"></el-input>
 				</el-form-item>
 				<el-form-item label="书籍类别：" prop="category">
-					<el-input v-model="form.category" placeholder="请输入书籍类别"></el-input>
+					<el-select v-model="form.category" placeholder="请选择书籍类别">
+						<el-option v-for="item in categoryList" :value="item.id" :label="item.name"></el-option>
+					</el-select>
 				</el-form-item>
+				<!-- <el-form-item label="所属幼儿园：" prop="kindergarten">
+					<el-select v-model="form.kindergartenIds" placeholder="请选择所属幼儿园" multiple >
+						<el-option v-for="item in kindergartenList" :value="item.id" :label="item.name"></el-option>
+					</el-select>
+				</el-form-item> -->
 				<el-form-item label="图书ISBN：" prop="isbn">
 					<el-input v-model="form.isbn" placeholder="请输入图书ISBN"></el-input>
 				</el-form-item>
 				<el-form-item label="书籍页数：" prop="pages">
 					<el-input v-model="form.pages" placeholder="请输入书籍页数"></el-input>
 				</el-form-item>
+				<el-form-item label="音频文件：" prop="audioFile">
+					<el-upload
+					ref="uploadMp3"
+					  drag
+					  :limit="1" 
+					   :action="action"
+					   :headers="headers"
+					   :on-remove="handleRemoveMp3"
+					   :on-success="handleSuccessMp3" 
+					  multiple>
+					  <i class="el-icon-upload"></i>
+					  <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+					</el-upload>
+				</el-form-item>
 				<el-form-item label="音视频路径：" prop="path">
 					<el-input v-model="form.path" placeholder="请输入书籍音视频路径"></el-input>
+				</el-form-item>
+				<el-form-item label="图书简介：" prop="briefIntro">
+					<el-input v-model="form.briefIntro" placeholder="请输入图书简介" type="textarea"></el-input>
 				</el-form-item>
 				<!-- <el-form-item label="图书二维码：" prop="attachment">
           <el-button
@@ -121,7 +138,7 @@
         </el-form-item> -->
 			</el-form>
 			<div slot="footer" class="dialog-footer">
-				<el-button @click="dialogFormVisible = false">取 消</el-button>
+				<el-button @click="cancel">取 消</el-button>
 				<el-button type="primary" @click="sendMailAndSms">确 定</el-button>
 			</div>
 		</el-dialog>
@@ -142,6 +159,10 @@
 		remove,
 		commonUpload,
 	} from "@/api/book";
+	import {
+		kindergartenList,
+		categoryList
+	} from "@/api/select"
 	import QRCode from "qrcodejs2";
 	import {
 		setStorage,
@@ -154,7 +175,9 @@
 			return {
 				searchForm: {
 					bootName: "",
+					isbn: "",
 					kindergarten: "",
+					category: "",
 					searchDate: "",
 					pageNum: 1,
 					pageSize: 10,
@@ -164,43 +187,121 @@
 				total: 0,
 				dialogFormVisible: false,
 				form: {
-					qr: "",
-					kindergarten: "",
 					name: "",
-					time: "",
 					cover: "",
 					author: "",
 					category: "",
+					kindergarten: '',
+					kindergartenIds: [],
 					isbn: "",
 					pages: "",
 					path: "",
+					qr: "",
+					time: "",
+					briefIntro: "",
+				},
+				rules: {
+					name: [{
+						required: true,
+						message: '请填写名称',
+						trigger: 'blur'
+					}],
+					cover: [{
+						required: true,
+						message: '请选择封面',
+						trigger: ['blur','change']
+					}],
+					author: [{
+						required: true,
+						message: '请填写作者',
+						trigger: 'blur'
+					}],
+					category: [{
+						required: true,
+						message: '请选择图书类别',
+						trigger: ['blur','change']
+					}],
+					// kindergarten: [{
+					// 	required: true,
+					// 	message: '请选择幼儿园',
+					// 	trigger: ['blur','change']
+					// }],
+					isbn: [{
+						required: true,
+						message: '请填写ISBN',
+						trigger: 'blur'
+					}],
+					pages: [{
+						required: true,
+						message: '请填写页数',
+						trigger: 'blur'
+					}],
 				},
 				id: "",
 				// validator
 				dialogImageUrl: "",
 				dialogVisible: false,
-				action: process.env.VUE_APP_BASE_API + "/common/upload",
+				action: process.env.VUE_APP_BASE_API + "/sys/common/upload",
 				cover: [],
 				attachment: [],
 				submitDisabled: false,
 				headers: {
 					Authorization: getStorage('token')
-				}
+				},
+				kindergartenList: [],
+				categoryList: [],
 			};
 		},
-		created() {},
+		created() {
+			this.getKindergartenList();
+			this.getCategoryList();
+		},
 		mounted() {
 			this.getQueryByPage();
+
 		},
 		computed: {},
 		methods: {
+			//查询幼儿园
+			getKindergartenList() {
+				kindergartenList().then(res => {
+					this.kindergartenList = res.data
+					console.log(res, '======')
+				})
+			},
+			//查询类别
+			getCategoryList() {
+				categoryList().then(res => {
+					this.categoryList = res.data
+				})
+			},
 			//列表查询
 			getQueryByPage() {
 				queryByPage(this.searchForm).then((res) => {
 					// if()
 					this.tableData = res.data.records;
 					this.total = res.data.total;
+					this.tableData.forEach(item => {
+						if (item.kindergarten) {
+							this.kindergartenList.forEach(el => {
+								if (item.kindergarten == el.id) {
+									item.kindergartenName = el.name
+								}
+							})
+						}
+						if (item.category) {
+							this.categoryList.forEach(el => {
+								if (item.category == el.id) {
+									item.categoryName = el.name
+								}
+							})
+						}
+					})
 				});
+			},
+			cancel(){
+				this.dialogFormVisible = false
+				this.$refs.uploadMp3.clearFiles()
 			},
 			//新增修改提交
 			sendMailAndSms() {
@@ -218,6 +319,7 @@
 								}).then(res => {
 									this.getQueryByPage();
 									this.dialogFormVisible = false;
+									this.$refs.uploadMp3.clearFiles()
 								})
 								// this.getQueryByPage();
 
@@ -228,6 +330,7 @@
 							}).then((res) => {
 								this.getQueryByPage();
 								this.dialogFormVisible = false;
+								this.$refs.uploadMp3.clearFiles()
 							});
 						}
 					}
@@ -236,6 +339,8 @@
 			//修改（调整数据）
 			update(row) {
 				this.id = row.id;
+				console.log(row,'==================')
+				row.category = Number(row.category)
 				this.form = Object.assign(row);
 				this.dialogFormVisible = true;
 				this.cover = []
@@ -297,8 +402,22 @@
 				return arr.includes(file.type);
 			},
 			//上传成功
+			handleSuccessMp3(res, file, fileList) {
+				console.log(res, ';----------')
+				if(res.code === 500){
+					this.$refs.uploadMp3.clearFiles()
+				}else{
+					this.form.path = res.url;
+				}
+				
+			},
+			//上传-删除
+			handleRemoveMp3(file, fileList) {
+				this.form.path = "";
+			},
+			//上传成功
 			handleSuccess(res, file, fileList) {
-				console.log(res,';----------')
+				console.log(res, ';----------')
 				this.form.cover = res.url;
 			},
 			//上传-删除
@@ -342,7 +461,12 @@
 				// }
 
 				for (let key in this.form) {
-					this.form[key] = "";
+					if(key == 'kindergartenIds'){
+						this.form[key] = [];
+					}else{
+						this.form[key] = "";
+					}
+					
 				}
 				this.id = "";
 				this.cover = [];

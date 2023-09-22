@@ -27,12 +27,12 @@ service.interceptors.response.use(
         type: 'error',
       })
     } else if (res.code === 401) {
-      // setStorage("token")
+      setStorage("token")
       Message({
         message: '登录过期，请重新登录！',
         type: 'error',
       })
-      // setTimeout(() => window.location.reload(), 2000);
+      setTimeout(() => window.location.reload(), 2000);
     }
     return res
   },

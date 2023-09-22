@@ -14,6 +14,16 @@
             placeholder="请输入联系电话："
           ></el-input>
         </el-form-item>
+		<el-form-item label="所属幼儿园：">
+			<el-select v-model="searchForm.kindergarten" placeholder="请选择所属幼儿园" clearable @change="selectPark">
+				<el-option v-for="item in kindergartenList" :value="item.id" :label="item.name"></el-option>
+			</el-select>
+		</el-form-item>
+		<el-form-item label="所属班级：">
+			<el-select v-model="searchForm.classId" placeholder="请输入所属班级" clearable no-data-text="请先选择所属幼儿园">
+				<el-option v-for="item in classList" :value="item.id" :label="item.name"></el-option>
+			</el-select>
+		</el-form-item>
         <!-- <el-form-item label="管理下的人员：">
           <el-select v-model="searchForm.person" filterable>
             <el-option
@@ -41,11 +51,8 @@
     >
       <el-table-column prop="name" label="教师姓名"> </el-table-column>
       <el-table-column prop="contact" label="联系电话"> </el-table-column>
-      <el-table-column prop="person" label="管理的人员">
-        <template slot-scope="{row}">
-          <span v-for="item in row.person" :key="item.id">{{item.name}}；</span>
-        </template>
-      </el-table-column>
+      <el-table-column prop="kindergartenName" label="所属幼儿园"> </el-table-column>
+      <el-table-column prop="classGradeName" label="班级"> </el-table-column>
       <el-table-column label="操作" width="100">
         <template slot-scope="{ row }">
           <span class="handle" @click="update(row)">修改</span>
@@ -79,6 +86,16 @@
             placeholder="请输入联系电话"
           ></el-input>
         </el-form-item>
+		<el-form-item label="所属幼儿园：">
+			<el-select v-model="form.kindergarten" placeholder="请选择所属幼儿园" clearable @change="selectPark">
+				<el-option v-for="item in kindergartenList" :value="item.id" :label="item.name"></el-option>
+			</el-select>
+		</el-form-item>
+		<el-form-item label="所属班级：">
+			<el-select v-model="form.classId" placeholder="请输入所属班级" clearable no-data-text="请先选择所属幼儿园">
+				<el-option v-for="item in classList" :value="item.id" :label="item.name"></el-option>
+			</el-select>
+		</el-form-item>
         <!-- <el-form-item label="管理下的人员：">
           <el-select v-model="form.person" filterable>
             <el-option
@@ -123,6 +140,7 @@ import {
   update,
   remove,
 } from "@/api/conservator";
+import {kindergartenList, classList} from "@/api/select"
 
 export default {
   components: {},
@@ -132,6 +150,8 @@ export default {
         name: "",
         contact: "",
         person: "",
+        kindergarten: "",
+        classId: "",
         pageNum: 1,
         pageSize: 10,
       },
@@ -142,18 +162,43 @@ export default {
       form: {
         name: "",
         contact: "",
-        person: [],
+        kindergarten: "",
+        classId: "",
       },
       personList: [],
       id: "",
+	  kindergartenList:[],
+	  classList:[],
     };
   },
-  created() {},
+  created() {
+	  this.getKindergartenList()
+  },
   mounted() {
     this.getQueryByPage();
   },
   computed: {},
   methods: {
+	  selectPark(e){
+		  this.getClassList(e)
+		  this.searchForm.classId = ''
+		  this.form.classId = ''
+		  console.log(e)
+	  },
+	  //查询幼儿园
+	  getKindergartenList(){
+	  	kindergartenList().then(res=>{
+	  		this.kindergartenList = res.data
+	  	})
+	  },
+	  //查询班级
+	   getClassList(kindergartenId,id){
+	  	classList({kindergartenId}).then(res=>{
+	  		this.classList = res.data
+	  	})
+	  },
+	  //获取班级
+	  getClass(){},
     //删除
     deleteDownload(row) {
       this.$confirm("删除后将不可找回，请谨慎操作", "确认删除", {
@@ -219,6 +264,7 @@ export default {
     update(row) {
       this.id = row.id;
       this.form = Object.assign(row);
+	  this.getClassList(this.form.kindergarten)
       this.dialogFormVisible = true;
     },
     sizeChange(val) {
@@ -230,14 +276,20 @@ export default {
       this.searchForm.pageNum = val;
       this.getQueryByPage();
     },
-    getQueryByPage() {
-      queryByPage(this.searchForm).then((res) => {
+     getQueryByPage() {
+       queryByPage(this.searchForm).then((res) => {
         this.tableData = res.data.records;
-        // this.tableData.forEach(item=>{
-        //   item.person = JSON.parse(item.person)
-        //   console.log(item.person)
-        // })
         this.total = res.data.total;
+		this.tableData.forEach(item=>{
+			if(item.kindergarten){
+				this.kindergartenList.forEach(el=>{
+					if(item.kindergarten == el.id){
+						item.kindergartenName = el.name
+					}
+				})
+			}
+			
+		})
       });
     },
     onSubmit() {
